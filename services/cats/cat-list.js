@@ -1,37 +1,34 @@
 const CatModel = require('./../../models/cat')
-const InteractionsModel = require('./../../models/interactions')
 
-const listCats = async (catIdData) => {
+const MONTHS_YEAR = 12
+
+const listCats = async (catId) => {
   try {
-    console.log('catId: ', catIdData)
-    // Consulta el cat activo
-    const CatId = await CatModel.findById(catIdData)
-    console.log('catId: ', CatId)
-    // interacciones del gato activo
-    const CatInteractions = (await InteractionsModel.exists({ cat_id: catIdData }))
-      ? await InteractionsModel.findOne({ cat_id: catIdData }) : (await InteractionsModel({ cat_id: catIdData }).save())
-    // Ids que no debe mostrar en la lista
-    const notIds = CatInteractions.cats_likes.concat(CatInteractions.cats_unlikes, CatInteractions.cats_matches)
-    console.log('Cat Interactions: ', notIds)
+    const catLogged = await CatModel.findById(catId)
+    const excludeCatsIds = [
+      catLogged.id,
+      ...catLogged.cats_likes,
+      ...catLogged.cats_unlikes,
+      ...catLogged.cats_matches
+    ]
 
-    // filtro para las preferencia de edad
-    const hoy = new Date()
-    console.log('Hoy: ', hoy)
-    const dateMax = new Date(hoy.setMonth(hoy.getMonth() - (CatId.preferences.ageMin * 12)))
-    console.log('Max: ', dateMax)
-    const dateMin = new Date(hoy.setMonth(hoy.getMonth() - (CatId.preferences.ageMax * 12)))
-    console.log('Min: ', dateMin)
+    const minPreferenceAgeInMonths = catLogged.preferences.age_min * MONTHS_YEAR
+    const maxPreferenceAgeInMonths = catLogged.preferences.age_max * MONTHS_YEAR
 
-    // consulta por preferencias e interaciones
-    const response = await CatModel.find({
-      gender: CatId.preferences.gender,
-      birthday: { $gte: dateMin, $lte: dateMax },
-      interests: { $in: CatId.interests },
-      _id: { $ne: notIds }
+    const currentDate = new Date()
+    const dateTo = currentDate.setMonth(currentDate.getMonth() - minPreferenceAgeInMonths)
+    const dateFrom = currentDate.setMonth(currentDate.getMonth() - maxPreferenceAgeInMonths)
+
+    const catsAvailable = await CatModel.find({
+      gender: catLogged.preferences.gender,
+      birthday: { $gte: dateFrom, $lte: dateTo },
+      interests: { $in: catLogged.interests },
+      _id: { $nin: excludeCatsIds }
     })
 
-    return { status: 1, response }
+    return { status: 1, catsAvailable }
   } catch (err) {
+    console.log(err)
     return { status: 2, msg: 'Error list cats' }
   }
 }

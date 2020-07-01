@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const { SECRET }= require('../../config/constants')
+const CatModel = require('../../models/cat')
 
 const loginService = async (email, password) => {
   try{
