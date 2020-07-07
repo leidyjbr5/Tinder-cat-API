@@ -7,7 +7,7 @@ const addUnLiked = async (catId, catIdUnLiked) => {
     cat.save()
     return { status: 1, cat }
   }catch(err){
-    return { status: 2 }
+    return { status: 2, msg: 'interaction not added'}
   }
 }
 

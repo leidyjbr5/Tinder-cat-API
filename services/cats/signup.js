@@ -5,7 +5,7 @@ const signup = async (catData) => {
     const response =  await CatModel(catData).save()
     return { status: 1, response }
   }catch(err){
-    return { status: 2, msg: 'Error saving document' }
+    return { status: 2, msg: 'Error saving register' }
   }
 }
 
