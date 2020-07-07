@@ -5,7 +5,7 @@ const newInterest = async(interestData) => {
     const interest = await InterestModel(interestData).save()
     return { status: 1, interest }
   } catch(err){
-    return { status: 2, msg: 'Error saving nwe interest'}
+    return { status: 2, msg: 'Error saving new interest'}
   }
 
 }
