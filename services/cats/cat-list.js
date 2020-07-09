@@ -21,8 +21,8 @@ const listCats = async (catId) => {
 
     const catsAvailable = await CatModel.find({
       gender: catLogged.preferences.gender,
-      birthday: { $gte: dateFrom, $lte: dateTo },
-      interests: { $in: catLogged.interests },
+      //birthday: { $gte: dateFrom, $lte: dateTo },
+      //interests: { $in: catLogged.interests },
       _id: { $nin: excludeCatsIds }
     })
 

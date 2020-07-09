@@ -12,8 +12,8 @@ router.post('/signup', signup)
 router.post('/autologin', authMiddleware, autologin)
 
 router.get('/', authMiddleware, catList) // devolver la lista de los gatos
-router.post('/liked', liked)
-router.post('/unliked', unliked)
+router.post('/liked', authMiddleware, liked)
+router.post('/unliked', authMiddleware, unliked)
 router.post('/interest', addInterest)
 router.delete('/interest', removeInterest)
 router.put('/preferences', authMiddleware, updatePreferences)
